@@ -1,7 +1,7 @@
 # py_todict
 
 ## Usage
-~~~~
+~~~~python
 from enum import Enum
 import json
 
