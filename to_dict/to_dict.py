@@ -42,7 +42,7 @@ class Dictable:
         elif convert_all_to_json_serializable and issubclass(type(value), Enum):
             value = value.value
 
-        if convert_all_to_json_serializable:
+        if value is not None and convert_all_to_json_serializable:
             supported_types = [str, float, int, bool, list, dict]
             is_supported_type = False
 
