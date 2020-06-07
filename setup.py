@@ -5,16 +5,16 @@ if os.path.exists(readme_path):
     with open(readme_path, "r") as f:
         long_description = f.read()
 else:
-    long_description = 'to_dict'
+    long_description = 'jsoncodable'
 
 setuptools.setup(
-    name="to_dict",
-    version="0.0.7",
+    name="jsoncodable",
+    version="0.0.1",
     author="Kristof",
     description="to_dict",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/kkristof200/py_todict",
+    url="https://github.com/kkristof200/py_jsoncodable",
     packages=setuptools.find_packages(),
     install_requires=[""],
     classifiers=[
