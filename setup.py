@@ -9,7 +9,7 @@ else:
 
 setuptools.setup(
     name="to_dict",
-    version="0.0.5",
+    version="0.0.6",
     author="Kristof",
     description="to_dict",
     long_description=long_description,

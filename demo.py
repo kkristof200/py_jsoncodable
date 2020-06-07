@@ -1,32 +1,48 @@
-from enum import Enum
+from jsoncodable import JSONCodable
 import json
 
-from to_dict import Dictable
+class Test1:
+    def __init__(self, value: int):
+        self.value1 = value
+        self.value2 = value * 2
+        self.values = [self.value1, self.value2]
 
-class E(Enum):
-    test = 'test_val'
+class Test2(JSONCodable):
+    def __init__(self, value: int):
+        self.test1 = Test1(value)
 
-class D:
-    def __init__(self):
-        self.val = 'str_val'
+test2 = Test2(5)
+print(test2.dict)
+# prints:
+# 
+# {'test1': <__main__.Test1 object at 0x1018199d0>}
 
-class C:
-    def __init__(self):
-        self.d1 = D()
-        self.d2 = D()
+print(json.dumps(test2.json, indent=4))
+# prints:
+# 
+# {
+#     "test1": {
+#         "value1": 5,
+#         "value2": 10,
+#         "values": [
+#             5,
+#             10
+#         ]
+#     }
+# }
 
-class B(Dictable):
-    def __init__(self, vals: list):
-        self.vals = vals
 
-class A(Dictable):
-    def __init__(self):
-        self.a = 5
-        self.b = 'b'
-        self.c = E.test
-        self.d = C()
-        self.e = [B([996, 997]), B([998, 999])]
-        self.f = {'key_1': B([996, 997]), 'key_2': B([998, 999])}
+class Test3(JSONCodable):
+    pass
 
-print(A().dict)
-print(json.dumps(A().json, indent=4))
+json_str = '{"name": "John Smith", "hometown": {"name": "New York", "id": 123}}'
+
+print(Test3.from_json(json_str))
+# prints:
+# 
+# JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
+
+print(Test3.from_json(json.loads(json_str)))
+# prints:
+# 
+# JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))

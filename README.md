@@ -1,88 +1,60 @@
-# py_todict
+# jsoncodable
 
 ## Install
 ~~~~shell
-pip install to_dict
+pip install jsoncodable
 # or
-pip3 install to_dict
+pip3 install jsoncodable
 ~~~~
 
 ## Usage
 ~~~~python
-from enum import Enum
+from jsoncodable import JSONCodable
 import json
 
-from to_dict import Dictable
+class Test1:
+    def __init__(self, value: int):
+        self.value1 = value
+        self.value2 = value * 2
+        self.values = [self.value1, self.value2]
 
-class E(Enum):
-    test = 'test_val'
+class Test2(JSONCodable):
+    def __init__(self, value: int):
+        self.test1 = Test1(value)
 
-class D:
-    def __init__(self):
-        self.val = 'str_val'
+test2 = Test2(5)
+print(test2.dict)
+# prints:
+# 
+# {'test1': <__main__.Test1 object at 0x1018199d0>}
 
-class C:
-    def __init__(self):
-        self.d1 = D()
-        self.d2 = D()
-
-class B(Dictable):
-    def __init__(self, vals: list):
-        self.vals = vals
-
-class A(Dictable):
-    def __init__(self):
-        self.a = 5
-        self.b = 'b'
-        self.c = E.test
-        self.d = C()
-        self.e = [B([996, 997]), B([998, 999])]
-        self.f = {'key_1': B([996, 997]), 'key_2': B([998, 999])}
-
-print(A().dict)
-# Outputs: {'a': 5, 'b': 'b', 'c': <E.test: 'test_val'>, 'd': <__main__.C object at 0x102afa1d0>, 'e': [{'vals': [996, 997]}, {'vals': [998, 999]}], 'f': {'key_1': {'vals': [996, 997]}, 'key_2': {'vals': [998, 999]}}}
-
-print(json.dumps(A().json, indent=4))
-# Outputs: 
+print(json.dumps(test2.json, indent=4))
+# prints:
+# 
 # {
-#     "a": 5,
-#     "b": "b",
-#     "c": "test_val",
-#     "d": {
-#         "d1": {
-#             "val": "str_val"
-#         },
-#         "d2": {
-#             "val": "str_val"
-#         }
-#     },
-#     "e": [
-#         {
-#             "vals": [
-#                 996,
-#                 997
-#             ]
-#         },
-#         {
-#             "vals": [
-#                 998,
-#                 999
-#             ]
-#         }
-#     ],
-#     "f": {
-#         "key_1": {
-#             "vals": [
-#                 996,
-#                 997
-#             ]
-#         },
-#         "key_2": {
-#             "vals": [
-#                 998,
-#                 999
-#             ]
-#         }
+#     "test1": {
+#         "value1": 5,
+#         "value2": 10,
+#         "values": [
+#             5,
+#             10
+#         ]
 #     }
 # }
+
+
+class Test3(JSONCodable):
+    pass
+
+json_str = '{"name": "John Smith", "hometown": {"name": "New York", "id": 123}}'
+
+print(Test3.from_json(json_str))
+# prints:
+# 
+# JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
+
+print(Test3.from_json(json.loads(json_str)))
+# prints:
+# 
+# JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
 ~~~~
