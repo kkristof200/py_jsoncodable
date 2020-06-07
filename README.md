@@ -12,6 +12,7 @@ pip3 install jsoncodable
 from jsoncodable import JSONCodable
 import json
 
+# ----------------------------------------- Any object to json dict ---------------------------------------- #
 class Test1:
     def __init__(self, value: int):
         self.value1 = value
@@ -42,7 +43,7 @@ print(json.dumps(test2.json, indent=4))
 #     }
 # }
 
-
+# ----------------------------------------- Any json dict to object ---------------------------------------- #
 class Test3(JSONCodable):
     pass
 
