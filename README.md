@@ -1,5 +1,12 @@
 # py_todict
 
+## Install
+~~~~shell
+pip install to_dict
+# or
+pip3 install to_dict
+~~~~
+
 ## Usage
 ~~~~python
 from enum import Enum
