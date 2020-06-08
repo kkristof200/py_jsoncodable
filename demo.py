@@ -1,4 +1,4 @@
-from jsoncodable import JSONCodable
+from jsoncodable import *
 import json
 
 class Test1:
@@ -17,8 +17,11 @@ print(test2.dict)
 # 
 # {'test1': <__main__.Test1 object at 0x1018199d0>}
 
-print(json.dumps(test2.json, indent=4))
-# prints:
+# print(json.dumps(test2.json, indent=4))
+# or
+test2.jsonprint()
+#
+# both will print:
 # 
 # {
 #     "test1": {

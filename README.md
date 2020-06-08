@@ -10,7 +10,7 @@ pip3 install jsoncodable
 
 ## Usage
 ~~~~python
-from jsoncodable import JSONCodable
+from jsoncodable import *
 import json
 
 # ---------------------------------------- Any object to json dict ---------------------------------------- #
@@ -32,7 +32,10 @@ print(test2.dict)
 # {'test1': <__main__.Test1 object at 0x1018199d0>}
 
 print(json.dumps(test2.json, indent=4))
-# prints:
+# or
+test2.jsonprint()
+#
+# both will print:
 # 
 # {
 #     "test1": {

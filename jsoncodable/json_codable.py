@@ -2,7 +2,6 @@
 
 # System
 from typing import Optional, Dict, Any
-import json
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -18,6 +17,7 @@ class JSONCodable:
     def from_json(cls, json_data: Any) -> Optional:
         try:
             from collections import namedtuple
+            import json
 
             if not isinstance(json_data, str):
                 json_data = json.dumps(json_data)
@@ -42,6 +42,8 @@ class JSONCodable:
     # -------------------------------------------------------- Public methods -------------------------------------------------------- #
 
     def jsonprint(self) -> None:
+        import json
+
         print(json.dumps(self.json, indent=4))
 
     @classmethod
@@ -72,6 +74,14 @@ class JSONCodable:
             return obj.value
 
         return obj.__dict__ if not recursive else cls.to_dict(obj.__dict__, recursive=recursive)
+
+    # ------------------------------------------------------ Private properties ------------------------------------------------------ #
+
+
+
+    # ------------------------------------------------------- Private methods -------------------------------------------------------- #
+
+
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
