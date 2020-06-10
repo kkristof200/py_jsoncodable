@@ -72,8 +72,6 @@ class JSONCodable:
             return obj.value
 
         real_dict = cls.__real__dict__(obj)
-        print(real_dict)
-        exit(0)
 
         return real_dict if not recursive else cls.to_dict(real_dict, recursive=recursive)
 
