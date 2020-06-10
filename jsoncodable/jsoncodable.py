@@ -71,7 +71,35 @@ class JSONCodable:
         elif issubclass(type(obj), Enum):
             return obj.value
 
-        return obj.__dict__ if not recursive else cls.to_dict(obj.__dict__, recursive=recursive)
+        real_dict = cls.__real__dict__(obj)
+        print(real_dict)
+        exit(0)
+
+        return real_dict if not recursive else cls.to_dict(real_dict, recursive=recursive)
+
+    @staticmethod
+    def __real__dict__(obj, include_private: bool = False) -> Dict[str, Any]:
+        object_dict = {}
+
+        for method_name in [method_name for method_name in dir(obj)]:
+            if (
+                (
+                    not include_private and method_name.startswith('_')
+                )
+                or
+                (
+                    method_name in dir(JSONCodable())
+                )
+                or
+                (
+                    callable(getattr(obj, method_name))
+                )
+            ):
+                continue
+
+            object_dict[method_name] = getattr(obj, method_name)
+
+        return object_dict
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
