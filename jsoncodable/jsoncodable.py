@@ -2,7 +2,7 @@
 
 # System
 from typing import Optional, Dict, Any
-import json
+import json, os
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -12,7 +12,7 @@ import json
 
 class JSONCodable:
 
-    # ------------------------------------------------------ Public properties ------------------------------------------------------- #
+    # -------------------------------------------------------- 'Init' methods -------------------------------------------------------- #
 
     @classmethod
     def from_json(cls, json_data: Any) -> Optional:
@@ -28,6 +28,22 @@ class JSONCodable:
 
             return None
 
+    @classmethod
+    def from_file(cls, json_path: str) -> Optional:
+        try:
+            with open(json_path, 'r') as f:
+                return cls.from_json(f.read())
+        except Exception as e:
+            print(e)
+
+            return None
+
+    # alias
+    load = from_file
+
+
+    # ------------------------------------------------------ Public properties ------------------------------------------------------- #
+
     @property
     def dict(self) -> Dict:
         '''Creates, dict from object.'''
@@ -40,6 +56,20 @@ class JSONCodable:
 
 
     # -------------------------------------------------------- Public methods -------------------------------------------------------- #
+
+    def to_file(self, json_path: str, indent: int = 4) -> bool:
+        try:
+            with open(json_path, 'w') as f:
+                json.dump(self.json, f, indent=indent)
+
+            return os.path.exists(json_path)
+        except Exception as e:
+            print(e)
+
+            return False
+
+    # alias
+    save = to_file
 
     def jsonprint(self) -> None:
         print(json.dumps(self.json, indent=4))
