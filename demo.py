@@ -1,4 +1,4 @@
-from jsoncodable import *
+from jsoncodable import JSONCodable
 import json
 
 class Test1:
@@ -49,3 +49,19 @@ print(Test3.from_json(json.loads(json_str)))
 # prints:
 # 
 # JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
+
+
+class Test4(JSONCodable):
+    def __init__(self):
+        pass
+
+json_str = '{"name": "John Smith", "hometown": {"name": "New York", "id": 123}}'
+
+test4 = Test4.from_json(json_str)
+
+import os
+from kcu import kpath
+
+json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test.json')
+
+test4.save(json_path)

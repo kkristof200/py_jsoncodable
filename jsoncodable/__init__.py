@@ -1,1 +1,1 @@
-from .jsoncodable import *
+from .jsoncodable import JSONCodable

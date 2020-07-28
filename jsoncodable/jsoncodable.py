@@ -2,7 +2,7 @@
 
 # System
 from typing import Optional, Dict, Any
-import json, os
+import json
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -12,7 +12,7 @@ import json, os
 
 class JSONCodable:
 
-    # -------------------------------------------------------- 'Init' methods -------------------------------------------------------- #
+    # ------------------------------------------------------ Public properties ------------------------------------------------------- #
 
     @classmethod
     def from_json(cls, json_data: Any) -> Optional:
@@ -27,22 +27,19 @@ class JSONCodable:
             print(e)
 
             return None
-
+    
     @classmethod
-    def from_file(cls, json_path: str) -> Optional:
+    def from_json_file(cls, json_file_path: Any) -> Optional:
         try:
-            with open(json_path, 'r') as f:
-                return cls.from_json(f.read())
+            with open(json_file_path, 'r') as f:
+                return cls.from_json(json.load(f))
         except Exception as e:
             print(e)
 
             return None
-
+    
     # alias
-    load = from_file
-
-
-    # ------------------------------------------------------ Public properties ------------------------------------------------------- #
+    load = from_json_file
 
     @property
     def dict(self) -> Dict:
@@ -57,19 +54,12 @@ class JSONCodable:
 
     # -------------------------------------------------------- Public methods -------------------------------------------------------- #
 
-    def to_file(self, json_path: str, indent: int = 4) -> bool:
-        try:
-            with open(json_path, 'w') as f:
-                json.dump(self.json, f, indent=indent)
-
-            return os.path.exists(json_path)
-        except Exception as e:
-            print(e)
-
-            return False
+    def save_to_file(self, path: str, indent: int=4):
+        with open(path, 'w') as f:
+            json.dump(self.json, f, indent=indent)
 
     # alias
-    save = to_file
+    save = save_to_file
 
     def jsonprint(self) -> None:
         print(json.dumps(self.json, indent=4))
