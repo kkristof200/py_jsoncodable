@@ -9,14 +9,14 @@ else:
 
 setuptools.setup(
     name="jsoncodable",
-    version="0.0.8",
+    version="0.0.9",
     author="Kristof",
     description="to_dict",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/kkristof200/py_jsoncodable",
     packages=setuptools.find_packages(),
-    install_requires=["kcu"],
+    install_requires=[""],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

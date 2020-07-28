@@ -16,6 +16,8 @@ class JSONCodable:
 
     @classmethod
     def from_json(cls, json_data: Any) -> Optional:
+        """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
+
         try:
             from collections import namedtuple
 
@@ -27,9 +29,11 @@ class JSONCodable:
             print(e)
 
             return None
-    
+
     @classmethod
     def from_json_file(cls, json_file_path: Any) -> Optional:
+        """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
+
         try:
             with open(json_file_path, 'r') as f:
                 return cls.from_json(json.load(f))
@@ -37,7 +41,7 @@ class JSONCodable:
             print(e)
 
             return None
-    
+
     # alias
     load = from_json_file
 
@@ -54,7 +58,7 @@ class JSONCodable:
 
     # -------------------------------------------------------- Public methods -------------------------------------------------------- #
 
-    def save_to_file(self, path: str, indent: int=4):
+    def save_to_file(self, path: str, indent: int=4) -> None:
         with open(path, 'w') as f:
             json.dump(self.json, f, indent=indent)
 
