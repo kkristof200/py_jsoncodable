@@ -2,6 +2,7 @@
 
 # System
 from typing import Optional, Dict, Any
+from datetime import datetime
 import json
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
@@ -94,6 +95,8 @@ class JSONCodable:
             return v_dict
         elif issubclass(type(obj), Enum):
             return obj.value
+        elif issubclass(type(obj), datetime):
+            return str(obj)
 
         real_dict = cls.__real__dict__(obj)
 
