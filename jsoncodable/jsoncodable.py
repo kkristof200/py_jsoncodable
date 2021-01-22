@@ -3,7 +3,7 @@
 # System
 from typing import Optional, Dict, Any
 from datetime import datetime
-import json
+import json, os
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -34,6 +34,9 @@ class JSONCodable:
     @classmethod
     def from_json_file(cls, json_file_path: Any) -> Optional:
         """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
+
+        if not os.path.exists(json_file_path):
+            return None
 
         try:
             with open(json_file_path, 'r') as f:
