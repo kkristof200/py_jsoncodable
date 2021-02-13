@@ -18,10 +18,8 @@ pip3 install jsoncodable
 
 ## Usage
 ~~~~python
-from jsoncodable import *
+from jsoncodable import JSONCodable
 import json
-
-# ---------------------------------------- Any object to json dict ---------------------------------------- #
 
 class Test1:
     def __init__(self, value: int):
@@ -36,15 +34,15 @@ class Test2(JSONCodable):
 test2 = Test2(5)
 print(test2.dict)
 # prints:
-# 
+#
 # {'test1': <__main__.Test1 object at 0x1018199d0>}
 
-print(json.dumps(test2.json, indent=4))
+# print(json.dumps(test2.json, indent=4))
 # or
 test2.jsonprint()
 #
 # both will print:
-# 
+#
 # {
 #     "test1": {
 #         "value1": 5,
@@ -56,7 +54,6 @@ test2.jsonprint()
 #     }
 # }
 
-# ---------------------------------------- Any json dict to object ---------------------------------------- #
 
 class Test3(JSONCodable):
     pass
@@ -64,12 +61,13 @@ class Test3(JSONCodable):
 json_str = '{"name": "John Smith", "hometown": {"name": "New York", "id": 123}}'
 
 print(Test3.from_json(json_str))
+print(Test3.from_json(json_str).hometown)
 # prints:
-# 
+#
 # JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
 
 print(Test3.from_json(json.loads(json_str)))
 # prints:
-# 
+#
 # JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
 ~~~~

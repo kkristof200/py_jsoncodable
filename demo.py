@@ -14,7 +14,7 @@ class Test2(JSONCodable):
 test2 = Test2(5)
 print(test2.dict)
 # prints:
-# 
+#
 # {'test1': <__main__.Test1 object at 0x1018199d0>}
 
 # print(json.dumps(test2.json, indent=4))
@@ -22,7 +22,7 @@ print(test2.dict)
 test2.jsonprint()
 #
 # both will print:
-# 
+#
 # {
 #     "test1": {
 #         "value1": 5,
@@ -43,10 +43,10 @@ json_str = '{"name": "John Smith", "hometown": {"name": "New York", "id": 123}}'
 print(Test3.from_json(json_str))
 print(Test3.from_json(json_str).hometown)
 # prints:
-# 
+#
 # JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))
 
 print(Test3.from_json(json.loads(json_str)))
 # prints:
-# 
+#
 # JSONCodable(name='John Smith', hometown=JSONCodable(name='New York', id=123))

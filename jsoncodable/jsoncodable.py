@@ -5,6 +5,9 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 import json, os
 
+# Pip
+from noraise import noraise
+
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
 
@@ -16,35 +19,27 @@ class JSONCodable:
     # ------------------------------------------------------ Public properties ------------------------------------------------------- #
 
     @classmethod
+    @noraise()
     def from_json(cls, json_data: Any) -> Optional:
         """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
 
-        try:
-            from collections import namedtuple
+        from collections import namedtuple
 
-            if not isinstance(json_data, str):
-                json_data = json.dumps(json_data)
+        if not isinstance(json_data, str):
+            json_data = json.dumps(json_data)
 
-            return json.loads(json_data, object_hook=lambda d: namedtuple('JSONCodable', d.keys())(*d.values()))
-        except Exception as e:
-            print(e)
-
-            return None
+        return json.loads(json_data, object_hook=lambda d: namedtuple('JSONCodable', d.keys())(*d.values()))
 
     @classmethod
+    @noraise()
     def from_json_file(cls, json_file_path: Any) -> Optional:
         """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
 
         if not os.path.exists(json_file_path):
             return None
 
-        try:
-            with open(json_file_path, 'r') as f:
-                return cls.from_json(json.load(f))
-        except Exception as e:
-            print(e)
-
-            return None
+        with open(json_file_path, 'r') as f:
+            return cls.from_json(json.load(f))
 
     # alias
     load = from_json_file
