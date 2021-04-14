@@ -17,6 +17,7 @@
 ## Description
 
 Easily create object from any dict/jsonstr/jsonfile and dict/jsonstr/jsonfile from any object
+
 From v0.1.0 it is based on [jsonpickle](https://github.com/jsonpickle/jsonpickle)
 
 ## Install
