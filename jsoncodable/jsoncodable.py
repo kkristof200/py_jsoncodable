@@ -1,12 +1,12 @@
 # --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
 
 # System
-from typing import Optional, Dict, Any
-from datetime import datetime
-import json, os
+from typing import Optional, Dict, Any, Union
+import json, os, io
 
 # Pip
 from noraise import noraise
+import jsonpickle
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -18,44 +18,26 @@ class JSONCodable:
 
     # ------------------------------------------------------ Public properties ------------------------------------------------------- #
 
-    @classmethod
-    @noraise()
-    def from_json(cls, json_data: Any) -> Optional:
-        """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
-
-        from collections import namedtuple
-
-        if not isinstance(json_data, str):
-            json_data = json.dumps(json_data)
-
-        return json.loads(json_data, object_hook=lambda d: namedtuple('JSONCodable', d.keys())(*d.values()))
-
-    @classmethod
-    @noraise()
-    def from_json_file(cls, json_file_path: Any) -> Optional:
-        """KEEP IN MIND, THAT METHODS WON'T BE ACCESSILE"""
-
-        if not os.path.exists(json_file_path):
-            return None
-
-        with open(json_file_path, 'r') as f:
-            return cls.from_json(json.load(f))
-
-    # alias
-    load = from_json_file
-
     @property
-    def dict(self) -> Dict:
+    def dict(self) -> Dict[str, Any]:
         '''Creates, dict from object.'''
         return self.to_dict(self, recursive=False)
 
     @property
-    def json(self) -> Dict:
+    def json(self) -> Dict[str, Any]:
         '''Same as .dict, but converts all object values to JSONSerializable ones recursively'''
-        return self.to_dict(self, recursive=True)
+        return json.loads(jsonpickle.encode(self))
 
 
     # -------------------------------------------------------- Public methods -------------------------------------------------------- #
+
+    def jsonstr(
+        self,
+        unpicklable: bool = True,
+        indent: Optional[int] = None,
+    ) -> str:
+        '''Same as .json, but json encoded string'''
+        return jsonpickle.encode(self, unpicklable=unpicklable, indent=indent)
 
     def save_to_file(self, path: str, indent: int=4) -> None:
         with open(path, 'w') as f:
@@ -64,41 +46,95 @@ class JSONCodable:
     # alias
     save = save_to_file
 
-    def jsonprint(self) -> None:
-        print(json.dumps(self.json, indent=4))
+    @classmethod
+    @noraise()
+    def from_json(
+        cls,
+        json_file_or_json_file_path_or_json_str_or_dict: Union[
+            Union[io.TextIOBase, io.BufferedIOBase, io.RawIOBase, io.IOBase],
+            str,
+            Dict[str, Any]
+        ]
+    ) -> Optional:
+        return jsonpickle.decode(cls.__get_patched_json_str(json_file_or_json_file_path_or_json_str_or_dict))
+
+    # aliases
+    load = from_json
+    from_json_file = from_json
+
+    def printjson(
+        self,
+        unpicklable: bool = False,
+        indent: Optional[int] = 4,
+    ) -> None:
+        print(
+            self.jsonstr(
+                unpicklable=unpicklable,
+                indent=indent
+            )
+        )
+
+    #alias
+    jsonprint = printjson
 
     @classmethod
-    def to_dict(cls, obj: Optional[Any], recursive: bool=True) -> Optional[Dict]:
-        if obj is None or type(obj) in [str, float, int, bool]:
-            return obj
+    def to_dict(cls, obj: Optional[Any], recursive: bool=True) -> Optional[Dict[str, Any]]:
+        return json.loads(jsonpickle.encode(obj)) if recursive else cls.__real__dict__(obj, include_private=False)
 
-        from copy import deepcopy
-        from enum import Enum
+    @classmethod
+    def full_class_name(cls):
+        module = cls.__module__
 
-        obj = deepcopy(obj)
+        if module == '__builtin__':
+            return cls.__name__
 
-        if isinstance(obj, list) or isinstance(obj, tuple):
-            v_list = []
+        return module + '.' + cls.__name__
 
-            for vv in obj:
-                v_list.append(cls.to_dict(vv, recursive=recursive))
+    # ------------------------------------------------------- Private methods -------------------------------------------------------- #
 
-            return v_list
-        elif isinstance(obj, dict):
-            v_dict = {}
+    @classmethod
+    @noraise()
+    def __get_patched_json_str(
+        cls,
+        json_file_or_json_file_path_or_json_str_or_dict: Union[
+            Union[io.TextIOBase, io.BufferedIOBase, io.RawIOBase, io.IOBase],
+            str,
+            Dict[str, Any]
+        ]
+    ) -> Optional[str]:
+        d = cls.__get_dict(json_file_or_json_file_path_or_json_str_or_dict)
+        d['py/object'] = cls.full_class_name()
 
-            for k, vv in obj.items():
-                v_dict[k] = cls.to_dict(vv, recursive=recursive)
+        return json.dumps(d)
 
-            return v_dict
-        elif issubclass(type(obj), Enum):
-            return obj.value
-        elif issubclass(type(obj), datetime):
-            return str(obj)
+    @staticmethod
+    def __get_dict(
+        json_file_or_json_file_path_or_json_str_or_dict: Union[
+            Union[io.TextIOBase, io.BufferedIOBase, io.RawIOBase, io.IOBase],
+            str,
+            Dict[str, Any]
+        ]
+    ) -> Dict[str, Any]:
+        var = json_file_or_json_file_path_or_json_str_or_dict
 
-        real_dict = cls.__real__dict__(obj)
+        if isinstance(var, str):
+            if os.path.exists(var):
+                var = open(var, 'r')
+            else:
+                return json.loads(var)
 
-        return real_dict if not recursive else cls.to_dict(real_dict, recursive=recursive)
+        if (
+            isinstance(var, io.TextIOBase)
+            or
+            isinstance(var, io.BufferedIOBase)
+            or
+            isinstance(var, io.RawIOBase)
+            or
+            isinstance(var, io.IOBase)
+        ):
+            return json.load(var)
+
+        return var
 
     @staticmethod
     def __real__dict__(obj, include_private: bool = False) -> Dict[str, Any]:
