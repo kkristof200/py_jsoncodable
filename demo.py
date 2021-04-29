@@ -1,4 +1,4 @@
-from jsoncodable import JSONCodable
+from jsoncodable import JSONCodable, CompressionAlgorithm
 
 class BirthDay(JSONCodable):
     def __init__(
@@ -51,27 +51,29 @@ Person.load(person.json).jsonprint()
 #     }
 # }
 
-# Save with gzip
-gzip_file_path = 'test.json'
-patched_gzip_file_path = person.save(gzip_file_path, gzipped=True)
-# returns a file_path which has a '.gz' extension if not present at the end of your provided path
-# also prints a message to let you know, that the path had been modified
-
-Person.load(patched_gzip_file_path).jsonprint()
-
-# prints
-#
-# {
-#     "name": "John",
-#     "birth_day": {
-#         "month": 7,
-#         "day": 7
-#     }
-# }
-
-
-# Cleaning up
-
 import os
 
-os.remove(patched_gzip_file_path)
+# Save with compression
+json_file_path = 'test.json'
+
+for c in CompressionAlgorithm:
+    compressed_file_path = person.save(json_file_path, compression=c)
+    # returns a file path which has the compressed extension if not present at the end of your provided path
+    # also prints a message to let you know, that the path had been modified
+
+
+    Person.load(compressed_file_path).jsonprint()
+    # prints
+    #
+    # {
+    #     "name": "John",
+    #     "birth_day": {
+    #         "month": 7,
+    #         "day": 7
+    #     }
+    # }
+
+
+    # Cleaning up
+
+    os.remove(compressed_file_path)
