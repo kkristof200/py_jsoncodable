@@ -1,22 +1,30 @@
-# --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
+# ------------------------------------------------------------ Imports ----------------------------------------------------------- #
 
 # System
 from typing import Optional, Dict, Any, Union
-import json, os, io
+import json, os, io, gzip
 
 # Pip
 from noraise import noraise
 import jsonpickle
 
-# ---------------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------------------------------------------------------------------------------------------- #
 
 
 
-# ---------------------------------------------------------- class: JsonCodable ---------------------------------------------------------- #
+# ------------------------------------------------------------ Defines ----------------------------------------------------------- #
+
+GZIP_EXTENSION = '.gz'
+
+# -------------------------------------------------------------------------------------------------------------------------------- #
+
+
+
+# ------------------------------------------------------ class: JsonCodable ------------------------------------------------------ #
 
 class JSONCodable:
 
-    # ------------------------------------------------------ Public properties ------------------------------------------------------- #
+    # --------------------------------------------------- Public properties -------------------------------------------------- #
 
     @property
     def dict(self) -> Dict[str, Any]:
@@ -29,7 +37,7 @@ class JSONCodable:
         return json.loads(jsonpickle.encode(self))
 
 
-    # -------------------------------------------------------- Public methods -------------------------------------------------------- #
+    # ---------------------------------------------------- Public methods ---------------------------------------------------- #
 
     def jsonstr(
         self,
@@ -39,9 +47,32 @@ class JSONCodable:
         '''Same as .json, but json encoded string'''
         return jsonpickle.encode(self, unpicklable=unpicklable, indent=indent)
 
-    def save_to_file(self, path: str, indent: int=4) -> None:
-        with open(path, 'w') as f:
-            json.dump(self.json, f, indent=indent)
+    def save_to_file(
+        self,
+        path: str,
+        indent: Optional[int] = 4,
+        gzipped: bool = False
+    ) -> str:
+        if gzipped:
+            if not path.endswith(GZIP_EXTENSION):
+                path += GZIP_EXTENSION
+                print('added ".gz" to the path so it will be "{}"'.format(path))
+
+            if indent == 4:
+                indent = None
+
+            with gzip.open(path, 'wb') as f:
+                f.write(
+                    self.jsonstr(
+                        unpicklable=True,
+                        indent=indent
+                    ).encode('utf-8')
+                ) 
+        else:
+            with open(path, 'w') as f:
+                json.dump(self.json, f, indent=indent)
+
+        return path
 
     # alias
     save = save_to_file
@@ -90,7 +121,7 @@ class JSONCodable:
 
         return module + '.' + cls.__name__
 
-    # ------------------------------------------------------- Private methods -------------------------------------------------------- #
+    # ---------------------------------------------------- Private methods --------------------------------------------------- #
 
     @classmethod
     @noraise()
@@ -107,8 +138,9 @@ class JSONCodable:
 
         return json.dumps(d)
 
-    @staticmethod
+    @classmethod
     def __get_dict(
+        cls,
         json_file_or_json_file_path_or_json_str_or_dict: Union[
             Union[io.TextIOBase, io.BufferedIOBase, io.RawIOBase, io.IOBase],
             str,
@@ -118,9 +150,24 @@ class JSONCodable:
         var = json_file_or_json_file_path_or_json_str_or_dict
 
         if isinstance(var, str):
-            if os.path.exists(var):
-                var = open(var, 'r')
+            # json string, json file path, gzipped json file path
+            possile_path = var
+            path_exists = False
+
+            if os.path.exists(possile_path):
+                path_exists = True
             else:
+                possile_path += GZIP_EXTENSION
+            
+            if path_exists or os.path.exists(possile_path):
+                # json file path, gzipped json file path
+                path = possile_path
+                open_method = gzip.open if cls.__is_gz_path(path) else open
+
+                with open_method(path, 'rb') as f:
+                    return json.load(f)
+            else:
+                # json str
                 return json.loads(var)
 
         if (
@@ -132,9 +179,22 @@ class JSONCodable:
             or
             isinstance(var, io.IOBase)
         ):
+            # file
             return json.load(var)
 
         return var
+    
+    @classmethod
+    def __is_gz_path(
+        cls,
+        path: str
+    ) -> bool:
+        with open(path, 'rb') as f:
+            return cls.__is_gz_file(f)
+
+    @staticmethod
+    def __is_gz_file(file) -> bool:
+        return file.read(2) == b'\x1f\x8b'
 
     @staticmethod
     def __real__dict__(obj, include_private: bool = False) -> Dict[str, Any]:
@@ -161,4 +221,4 @@ class JSONCodable:
         return object_dict
 
 
-# ---------------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------------------------------------------------------------------------------------------- #

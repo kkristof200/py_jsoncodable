@@ -9,7 +9,7 @@ else:
 
 setuptools.setup(
     name="jsoncodable",
-    version="0.1.2",
+    version="0.1.3",
     author="Kristof",
     description="to_dict",
     long_description=long_description,
@@ -18,7 +18,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'jsonpickle>=2.0.0',
-        'noraise>=0.0.10'
+        'noraise>=0.0.16'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
