@@ -47,14 +47,16 @@ class JSONCodable:
         self,
         path: str,
         indent: Optional[int] = 4,
-        compression: Optional[CompressionAlgorithm] = None
+        compression: Optional[CompressionAlgorithm] = None,
+        ensure_compression_extension: bool = True
     ) -> str:
         if compression:
-            ext = '.{}'.format(compression._extension)
+            if ensure_compression_extension:
+                ext = '.{}'.format(compression._extension)
 
-            if not path.endswith(ext):
-                path += ext
-                print('Added "{}" to the path so it will be "{}"'.format(ext, path))
+                if not path.endswith(ext):
+                    path += ext
+                    print('Added "{}" to the path so it will be "{}"'.format(ext, path))
 
             Compressor.write(
                 path,

@@ -9,7 +9,7 @@ else:
 
 setuptools.setup(
     name="jsoncodable",
-    version="0.1.4",
+    version="0.1.5",
     author="Kristof",
     description="to_dict",
     long_description=long_description,
