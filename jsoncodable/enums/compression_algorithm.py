@@ -2,7 +2,7 @@
 
 # System
 from enum import Enum
-import gzip, bz2, lzma#, zipfile
+import gzip, lzma, bz2#, zipfile
 
 # -------------------------------------------------------------------------------------------------------------------------------- #
 
